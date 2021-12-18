@@ -1,3 +1,17 @@
+# Dissecting Twitter data to analyze government and public attitude towards COVID governance
+
+• Developed a solution to analyze the government's and the public's attitudes toward COVID governance, as well as an Angular UI to present the analytic findings.
+
+• Sentiment analysis, topic modeling, and stance detection on vaccine-related tweets were performed, and analytical insights were presented using PowerBI.
+
+• Analyzed influencer score and use it to improve tweets ranking
+
+• Enhanced knowledge of building end-to-end IR system including relevancy model and analytics.
+
+
+
+
+
 ### ArchitectUI - Angular 7 Bootstrap 4
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.0.
