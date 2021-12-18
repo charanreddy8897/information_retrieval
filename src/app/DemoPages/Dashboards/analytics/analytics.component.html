@@ -1,0 +1,918 @@
+<!-- <app-page-title [heading]="heading" [subheading]="subheading" [icon]="icon"></app-page-title> -->
+<div class="mb-3 card" >
+<div class="input-group stylish-input-group">
+  <input #searchBox id="search-box" [(ngModel)]="searchTerm" type="text" class="form-control"  placeholder="Search For Tweets" (change)="searchSolr()" >
+</div>
+</div>
+<div class="row justify-content-center" style="padding-bottom:20px">
+  <div class="col-sm-1 col-lg-2">
+
+    <div class="widget-subheading">Persons of Interest</div>
+     <select class="form-control-sm form-control" style="width:150px;" [(ngModel)]="poiFilter" (change)="searchSolr()">
+      <option selected value='%5B*%20TO%20*%5D'>--</option>
+      <option>AOC</option>
+      <option>CDCgov</option>
+      <option>CovidIndiaSeva</option>
+      <option>GovMLG</option>
+      <option>HHSGov</option>
+      <option>ICMRDELHI</option>
+      <option>KTRTRS</option>
+      <option>KamalaHarris</option>
+      <option>M_OlgaSCordero</option>
+      <option>MamataOfficial</option>
+      <option>MoHFW_INDIA</option>
+      <option>NMDOH</option>
+      <option>PMOIndia</option>
+      <option>SRE_mx</option>
+      <option>SSalud_mx</option>
+      <option>SpeakerPelosi</option>
+      <option>US_FDA</option>
+      <option>VP</option>
+      <option>gobmx</option>
+      <option>lopezobrador_</option>
+      <option>m_ebrard</option>
+      <option>myogiadityanath</option>
+      <option>narendramodi</option>
+      <option>rajnathsingh</option>
+      <option>tedcruz</option>
+    </select> 
+  </div>
+  <div class="col-sm-1 col-lg-2">
+    <div class="widget-subheading">Country</div>
+     <select class="form-control-sm form-control" style="width:150px;" [(ngModel)]="countryFilter" (change)="searchSolr()">
+      <option selected  value=''>--</option>
+      <option>USA</option>
+      <option>MEXICO</option>
+      <option>INDIA</option>
+    </select>
+   </div> 
+   <div class="col-sm-1 col-lg-2">
+    <div class="widget-subheading">Language</div>
+     <select class="form-control-sm form-control" style="width:150px;" [(ngModel)]="langFilter" (change)="searchSolr()">
+      <option selected  value=''>--</option>
+      <option>en</option>
+      <option>es</option>
+      <option>hi</option>
+    </select>
+   </div> 
+
+  
+</div>
+
+<div class="mb-3 card">
+  <div class="card-header-tab card-header">
+    <div class="card-header-title font-size-lg text-capitalize font-weight-normal">
+      <i class="header-icon lnr-charts icon-gradient bg-happy-green"> </i>
+      Tweets Summary
+    </div>
+  </div>
+  <div class="no-gutters row">
+    <div class="col-sm-6 col-md-4 col-xl-4">
+      <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+        <div class="icon-wrapper rounded-circle">
+          <div class="icon-wrapper-bg opacity-10 bg-warning"></div>
+          <i class="pe-7s-album text-white opacity-8"></i>
+        </div>
+        <div class="widget-chart-content">
+          <div class="widget-subheading">Total Tweets</div>
+          <div class="widget-numbers">147000</div>
+          <!-- <div class="widget-description opacity-8 text-focus">
+            <div class="d-inline text-danger pr-1">
+              <fa name="angle-down"></fa>
+              <span class="pl-1">54.1%</span>
+            </div>
+            less earnings
+          </div> -->
+        </div>
+      </div>
+      <div class="divider m-0 d-md-none d-sm-block"></div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-xl-4">
+      <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+        <div class="icon-wrapper rounded-circle">
+          <div class="icon-wrapper-bg opacity-9 bg-danger"></div>
+          <i class="pe-7s-portfolio text-white"></i></div>
+        <div class="widget-chart-content">
+          <div class="widget-subheading">General Population</div>
+          <div class="widget-numbers"><span>70000+</span></div>
+        </div>
+      </div>
+      <div class="divider m-0 d-md-none d-sm-block"></div>
+    </div>
+    <div class="col-sm-12 col-md-4 col-xl-4">
+      <div class="card no-shadow rm-border bg-transparent widget-chart text-left">
+        <div class="icon-wrapper rounded-circle">
+          <div class="icon-wrapper-bg opacity-9 bg-success"></div>
+          <i class="pe-7s-light text-white"></i></div>
+        <div class="widget-chart-content">
+          <div class="widget-subheading">POI's</div>
+          <div class="widget-numbers text-success"><span>25000+</span></div>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12 col-lg-6">
+   <div class="card main-card mb-3" >
+    <div class="card-header">
+      Filtered POI Tweets
+    </div>
+  
+    <div style="max-height: 700px;overflow-y:auto;">
+      <div class="card-body" *ngFor="let tweet of resultDocs">
+        <div id="collapseExample" class="mt-3" [ngbCollapse]="isCollapsed">
+          <div class="card">
+            <div class="card-body">
+              <!-- <div class="icon-wrapper rounded-circle">
+                <div class="icon-wrapper-bg opacity-10 bg-warning"></div>
+                <i class="pe-7s-check text-white opacity-8"></i>
+              </div> -->
+              <div class="row" >
+              <div><i class="pe-7s-check text-success" style="padding-right: 5px;"></i><b>{{tweet["poi_name"]}}</b></div>
+              <div *ngIf="tweet['sentiment']=='neutral'" class="col-lg-3 text-center" style="height: fit-content;" > <div class="badge badge-pill badge-info">Neutral Sentiment</div> </div>
+              <div *ngIf="tweet['sentiment']=='positive'" class="col-lg-3 text-center" style="height: fit-content;" > <div class="badge badge-pill badge-success">Positive Sentiment</div> </div>
+              <div *ngIf="tweet['sentiment']=='negative'" class="col-lg-3 text-center" style="height: fit-content;" > <div class="badge badge-pill badge-danger">Negative Sentiment</div> </div>
+              </div>
+              {{tweet["tweet_text"]}}
+
+              <div><button class="mb-2 mr-2 btn btn-info" style="float:right;width:100px" (click)="openLarge(content6,tweet['poi_id'])" >Replies</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #content6 let-c="close" let-d="dismiss">
+      <div class="modal-header">
+        <h4 class="modal-title">Modal title</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="max-height:500px;overflow-y: auto;">
+         
+        <div class="card-body" *ngFor="let tweet of replyDocs">
+          <div id="collapseExample" class="mt-3" [ngbCollapse]="isCollapsed">
+            <div class="card">
+              <div class="card-body">
+               <div class="row">
+                 <div  class="col-lg-9" > {{tweet["tweet_text"]}}</div>
+                 <div *ngIf="tweet['sentiment']=='neutral'" class="col-lg-3 text-center" style="height: fit-content;" > <div class="badge badge-pill badge-info">Neutral Sentiment</div> </div>
+                 <div *ngIf="tweet['sentiment']=='positive'" class="col-lg-3 text-center" style="height: fit-content;" > <div class="badge badge-pill badge-success">Positive Sentiment</div> </div>
+                 <div *ngIf="tweet['sentiment']=='negative'" class="col-lg-3 text-center" style="height: fit-content;" > <div class="badge badge-pill badge-danger">Negative Sentiment</div> </div>
+               </div>
+               
+     
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+      </div>
+    </ng-template>
+   
+  </div>
+
+  
+  </div>
+
+  <div class="col-sm-12 col-lg-6">
+    <div class="card main-card mb-3" >
+     <div class="card-header">
+       Related News
+     </div>
+   
+     <div style="max-height: 700px;overflow-y:auto;">
+       <div class="card-body" *ngIf="newsArticles.length>0">
+         <div id="collapseExample" class="mt-3" >
+           <div class="card">
+             <div class="card-body">
+              <ul  >
+                <li *ngFor="let article of newsArticles" style="margin-left:50px;padding-top:20px;">
+                
+                <div class="row">
+                <div class="col-sm-1 " >
+                  <img class="pull-right" src="{{article.urlToImage}}" height="60px">
+                </div>
+                <div class="col-sm-9" >
+                <a href="{{article.url}}" target="_blank">{{article.title}}: </a><br>
+                {{article.description}}
+                </div>
+              
+                </div>  
+                </li>
+                
+                </ul>
+             </div>
+             
+           </div>
+         </div>
+       </div>
+     </div>
+    
+   </div>
+ 
+   
+   </div>
+  </div>
+
+  <!-- <div class="text-center d-block p-3 card-footer">
+    <button class="btn-pill btn-shadow btn-wide fsize-1 btn btn-primary btn-lg">
+                  <span class="mr-2 opacity-7">
+                      <i class="icon icon-anim-pulse ion-ios-analytics-outline"></i>
+                  </span>
+      <span class="mr-1">View Complete Report</span>
+    </button>
+  </div> -->
+
+<div class="main-card mb-3 card" style="display: none;">
+  <div class="card-header">
+    <div class="card-header-title font-size-lg text-capitalize font-weight-normal">Company Agents Status</div>
+  </div>
+  <div class="table-responsive">
+    <table class="align-middle text-truncate mb-0 table table-borderless table-hover">
+      <thead>
+      <tr>
+        <th class="text-center">#</th>
+        <th class="text-center">Avatar</th>
+        <th class="text-center">Name</th>
+        <th class="text-center">Company</th>
+        <th class="text-center">Status</th>
+        <th class="text-center">Due Date</th>
+        <th class="text-center">Target Achievement</th>
+        <th class="text-center">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="text-center text-muted" style="width: 80px;">#54</td>
+        <td class="text-center" style="width: 80px;">
+          <img width="40" class="rounded-circle" src="./assets/images/avatars/1.jpg" alt="">
+        </td>
+        <td class="text-center"><a [routerLink]="">Juan C. Cargill</a></td>
+        <td class="text-center"><a [routerLink]="">Micro Electronics</a></td>
+        <td class="text-center">
+          <div class="badge badge-pill badge-danger">Canceled</div>
+        </td>
+        <td class="text-center">
+                                        <span class="pr-2 opacity-6">
+                                            <i class="fa fa-business-time"></i>
+                                        </span>
+          12 Dec
+        </td>
+        <td class="text-center" style="width: 200px;">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left pr-2">
+                  <div class="widget-numbers fsize-1 text-danger">71%</div>
+                </div>
+                <div class="widget-content-right w-100">
+                  <div class="progress-bar-xs progress">
+                    <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="71" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 71%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td class="text-center">
+          <div role="group" class="btn-group-sm btn-group">
+            <button class="btn-shadow btn btn-primary">Hire</button>
+            <button class="btn-shadow btn btn-primary">Fire</button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="text-center text-muted" style="width: 80px;">#55</td>
+        <td class="text-center" style="width: 80px;">
+          <img width="40" class="rounded-circle" src="./assets/images/avatars/2.jpg" alt="">
+        </td>
+        <td class="text-center"><a [routerLink]="">Johnathan Phelan</a></td>
+        <td class="text-center"><a [routerLink]="">Hatchworks</a></td>
+        <td class="text-center">
+          <div class="badge badge-pill badge-info">On Hold</div>
+        </td>
+        <td class="text-center">
+                                        <span class="pr-2 opacity-6">
+                                            <i class="fa fa-business-time"></i>
+                                        </span>
+          12 Dec
+        </td>
+        <td class="text-center" style="width: 200px;">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left pr-2">
+                  <div class="widget-numbers fsize-1 text-warning">54%</div>
+                </div>
+                <div class="widget-content-right w-100">
+                  <div class="progress-bar-xs progress">
+                    <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="54" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 54%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td class="text-center">
+          <div role="group" class="btn-group-sm btn-group">
+            <button class="btn-shadow btn btn-primary">Hire</button>
+            <button class="btn-shadow btn btn-primary">Fire</button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="text-center text-muted" style="width: 80px;">#56</td>
+        <td class="text-center" style="width: 80px;">
+          <img width="40" class="rounded-circle" src="./assets/images/avatars/3.jpg" alt="">
+        </td>
+        <td class="text-center"><a [routerLink]="">Darrell Lowe</a></td>
+        <td class="text-center"><a [routerLink]="">Riddle Electronics</a></td>
+        <td class="text-center">
+          <div class="badge badge-pill badge-warning">In Progress</div>
+        </td>
+        <td class="text-center">
+                                        <span class="pr-2 opacity-6">
+                                            <i class="fa fa-business-time"></i>
+                                        </span>
+          12 Dec
+        </td>
+        <td class="text-center" style="width: 200px;">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left pr-2">
+                  <div class="widget-numbers fsize-1 text-success">97%</div>
+                </div>
+                <div class="widget-content-right w-100">
+                  <div class="progress-bar-xs progress">
+                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow="97" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 97%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td class="text-center">
+          <div role="group" class="btn-group-sm btn-group">
+            <button class="btn-shadow btn btn-primary">Hire</button>
+            <button class="btn-shadow btn btn-primary">Fire</button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="text-center text-muted" style="width: 80px;">#56</td>
+        <td class="text-center" style="width: 80px;">
+          <img width="40" class="rounded-circle" src="./assets/images/avatars/4.jpg" alt="">
+        </td>
+        <td class="text-center"><a [routerLink]="">George T. Cottrell</a></td>
+        <td class="text-center"><a [routerLink]="">Pixelcloud</a></td>
+        <td class="text-center">
+          <div class="badge badge-pill badge-success">Completed</div>
+        </td>
+        <td class="text-center">
+                                        <span class="pr-2 opacity-6">
+                                            <i class="fa fa-business-time"></i>
+                                        </span>
+          12 Dec
+        </td>
+        <td class="text-center" style="width: 200px;">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left pr-2">
+                  <div class="widget-numbers fsize-1 text-info">88%</div>
+                </div>
+                <div class="widget-content-right w-100">
+                  <div class="progress-bar-xs progress">
+                    <div class="progress-bar bg-info" role="progressbar" aria-valuenow="88" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 88%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td class="text-center">
+          <div role="group" class="btn-group-sm btn-group">
+            <button class="btn-shadow btn btn-primary">Hire</button>
+            <button class="btn-shadow btn btn-primary">Fire</button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-block p-4 text-center card-footer">
+    <button class="btn-pill btn-shadow btn-wide fsize-1 btn btn-dark btn-lg">
+      <span class="mr-2 opacity-7">
+          <i class="fa fa-cog fa-spin"></i>
+      </span>
+      <span class="mr-1">View Complete Report</span>
+    </button>
+  </div>
+</div>
+<div class="row" style="display: none;">
+  <div class="col-sm-12 col-lg-6">
+    <div class="mb-3 card">
+      <div class="card-header-tab card-header">
+        <div class="card-header-title font-size-lg text-capitalize font-weight-normal">
+          <i class="header-icon lnr-cloud-download icon-gradient bg-happy-itmeo"> </i>
+          Technical Support
+        </div>
+      </div>
+      <div class="p-0 card-body">
+        <div class="p-1 slick-slider-sm mx-auto">
+          <div class="widget-chart widget-chart2 text-left p-0">
+            <div class="widget-chat-wrapper-outer">
+              <div class="widget-chart-content widget-chart-content-lg pb-0">
+                <div class="widget-chart-flex">
+                  <div class="widget-title opacity-5 text-muted text-uppercase">Helpdesk Tickets</div>
+                </div>
+                <div class="widget-numbers">
+                  <div class="widget-chart-flex">
+                    <div>
+                      <span class="text-warning">34</span>
+                    </div>
+                    <div class="widget-title ml-2 font-size-lg font-weight-normal text-dark">
+                      <span class="opacity-5 text-muted pl-2 pr-1">5%</span>
+                      increase
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-chart-wrapper he-auto opacity-10 m-0">
+                <div class="d-block">
+                  <canvas baseChart
+                          class="chart"
+                          [datasets]="datasets"
+                          [labels]="labels"
+                          [colors]="lineChartColors"
+                          [options]="options"
+                          [chartType]="'line'"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="text-muted text-uppercase font-size-md opacity-5 pl-3 pr-3 pb-1 font-weight-normal">Sales
+          Progress</h6>
+        <ul class="list-group list-group-flush">
+          <li class="p-3 bg-transparent list-group-item">
+            <div class="widget-content p-0">
+              <div class="widget-content-outer">
+                <div class="widget-content-wrapper">
+                  <div class="widget-content-left">
+                    <div class="widget-heading">Total Orders</div>
+                    <div class="widget-subheading">Last year expenses</div>
+                  </div>
+                  <div class="widget-content-right">
+                    <div class="widget-numbers text-success">
+                      <small>$</small>
+                      1896
+                    </div>
+                  </div>
+                </div>
+                <div class="widget-progress-wrapper">
+                  <div class="progress-bar-sm progress-bar-animated-alt progress">
+                    <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="43" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 43%;"></div>
+                  </div>
+                  <div class="progress-sub-label">
+                    <div class="sub-label-left">YoY Growth</div>
+                    <div class="sub-label-right">100%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-lg-6">
+    <div class="card-hover-shadow-2x mb-3 card">
+      <div class="card-header-tab card-header">
+        <div class="card-header-title font-size-lg text-capitalize font-weight-normal">
+          <i class="header-icon lnr-lighter icon-gradient bg-amy-crisp"> </i>
+          Timeline Example
+        </div>
+      </div>
+      <div class="scroll-area-lg">
+        <perfect-scrollbar [autoPropagation]="true">
+          <div class="p-4">
+            <div
+              class="vertical-time-simple vertical-without-time vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
+              <div class="dot-danger vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">All Hands Meeting</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-warning vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <p>Yet another one, at <span class="text-success">15:00 PM</span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-success vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">Build the production release
+                      <div class="badge badge-danger ml-2">NEW</div>
+                    </h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-primary vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">
+                      Something not important
+                    </h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-warning vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <p>Yet another one, at <span class="text-success">15:00 PM</span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-success vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">Build the production release
+                      <div class="badge badge-danger ml-2">NEW</div>
+                    </h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-info vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">This dot has an info state</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-dark vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">This dot has a dark state</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-danger vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">All Hands Meeting</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-warning vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <p>Yet another one, at <span class="text-success">15:00 PM</span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-success vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">Build the production release
+                      <div class="badge badge-danger ml-2">NEW</div>
+                    </h4>
+                  </div>
+                </div>
+              </div>
+              <div class="dot-primary vertical-timeline-element">
+                <div>
+                  <span class="vertical-timeline-element-icon bounce-in"></span>
+                  <div class="vertical-timeline-element-content bounce-in">
+                    <h4 class="timeline-title">
+                      Something not important
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </perfect-scrollbar>
+      </div>
+      <div class="d-block text-center card-footer">
+        <button class="btn-shadow btn-wide btn-pill btn btn-focus">
+          View All Messages
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12 col-lg-6">
+    <div class="card-hover-shadow-2x mb-3 card">
+      <div class="card-header-tab card-header">
+        <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i
+          class="header-icon lnr-database icon-gradient bg-malibu-beach"> </i>Vaccine Hesitancy
+        </div>
+        
+      </div>
+      <div class="scroll-area-lg">
+        <perfect-scrollbar [autoPropagation]="true">
+          <ul class="todo-list-wrapper list-group list-group-flush" >
+            <li class="list-group-item" *ngFor="let phrase of vaccine_persuasion">
+              <div class="todo-indicator bg-warning"></div>
+              <div class="widget-content p-0">
+                <div class="widget-content-wrapper">
+                  <div class="widget-content-left mr-2">
+                   
+                  </div>
+                  <div class="widget-content-left">
+                    <div class="widget-heading">{{phrase}}</div>
+                  </div>
+                 
+                </div>
+              </div>
+            </li>
+            <li class="list-group-item">
+            
+          </ul>
+        </perfect-scrollbar>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-lg-6">
+    <div class="card-hover-shadow-2x mb-3 card">
+      <div class="card-header-tab card-header">
+        <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i
+          class="header-icon lnr-database icon-gradient bg-malibu-beach"> </i>Fake News on  Vaccines
+        </div>
+        
+      </div>
+      <div class="scroll-area-lg">
+        <perfect-scrollbar [autoPropagation]="true">
+          <ul class="todo-list-wrapper list-group list-group-flush" >
+            <li class="list-group-item" *ngFor="let phrase of vaccine_fake">
+              <div class="todo-indicator bg-warning"></div>
+              <div class="widget-content p-0">
+                <div class="widget-content-wrapper">
+                  <div class="widget-content-left mr-2">
+                   
+                  </div>
+                  <div class="widget-content-left">
+                    <div class="widget-heading">{{phrase}}</div>
+                  </div>
+                 
+                </div>
+              </div>
+            </li>
+            <li class="list-group-item">
+            
+          </ul>
+        </perfect-scrollbar>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-lg-6" style="display: none;">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card mb-3 widget-chart widget-chart2 text-left card-btm-border card-shadow-success border-success">
+          <div class="widget-chat-wrapper-outer">
+            <div class="widget-chart-content pt-3 pl-3 pb-1">
+              <div class="widget-chart-flex">
+                <div class="widget-numbers">
+                  <div class="widget-chart-flex">
+                    <div class="fsize-4">
+                      <small class="opacity-5">$</small>
+                      <span>874</span></div>
+                  </div>
+                </div>
+              </div>
+              <h6 class="widget-subheading mb-0 opacity-5">sales last month</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card mb-3 widget-chart widget-chart2 text-left card-btm-border card-shadow-primary border-primary">
+          <div class="widget-chat-wrapper-outer">
+            <div class="widget-chart-content pt-3 pl-3 pb-1">
+              <div class="widget-chart-flex">
+                <div class="widget-numbers">
+                  <div class="widget-chart-flex">
+                    <div class="fsize-4">
+                      <small class="opacity-5">$</small>
+                      <span>1283</span></div>
+                  </div>
+                </div>
+              </div>
+              <h6 class="widget-subheading mb-0 opacity-5">Sales Income</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card mb-3 widget-chart widget-chart2 text-left card-btm-border card-shadow-warning border-warning">
+          <div class="widget-chat-wrapper-outer">
+            <div class="widget-chart-content pt-3 pl-3 pb-1">
+              <div class="widget-chart-flex">
+                <div class="widget-numbers">
+                  <div class="widget-chart-flex">
+                    <div class="fsize-4">
+                      <small class="opacity-5">$</small>
+                      <span>1286</span></div>
+                  </div>
+                </div>
+              </div>
+              <h6 class="widget-subheading mb-0 opacity-5">last month sales</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card mb-3 widget-chart widget-chart2 text-left card-btm-border card-shadow-danger border-danger">
+          <div class="widget-chat-wrapper-outer">
+            <div class="widget-chart-content pt-3 pl-3 pb-1">
+              <div class="widget-chart-flex">
+                <div class="widget-numbers">
+                  <div class="widget-chart-flex">
+                    <div class="fsize-4">
+                      <small class="opacity-5">$</small>
+                      <span>564</span></div>
+                  </div>
+                </div>
+              </div>
+              <h6 class="widget-subheading mb-0 opacity-5">total revenue</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card mb-3 widget-chart widget-chart2 text-left card-btm-border card-shadow-info border-info">
+          <div class="widget-chat-wrapper-outer">
+            <div class="widget-chart-content pt-3 pl-3 pb-1">
+              <div class="widget-chart-flex">
+                <div class="widget-numbers">
+                  <div class="widget-chart-flex">
+                    <div class="fsize-4">
+                      <small class="opacity-5">$</small>
+                      <span>1283</span></div>
+                  </div>
+                </div>
+              </div>
+              <h6 class="widget-subheading mb-0 opacity-5">Sales Income</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card mb-3 widget-chart widget-chart2 text-left card-btm-border card-shadow-warning border-warning">
+          <div class="widget-chat-wrapper-outer">
+            <div class="widget-chart-content pt-3 pl-3 pb-1">
+              <div class="widget-chart-flex">
+                <div class="widget-numbers">
+                  <div class="widget-chart-flex">
+                    <div class="fsize-4">
+                      <small class="opacity-5">$</small>
+                      <span>874</span></div>
+                  </div>
+                </div>
+              </div>
+              <h6 class="widget-subheading mb-0 opacity-5">sales last month</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="no-gutters row" style="display: none;" >
+    <div class="col-md-12 col-lg-4">
+      <ul class="list-group list-group-flush">
+        <li class="bg-transparent list-group-item">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left">
+                  <div class="widget-heading">Total Orders</div>
+                  <div class="widget-subheading">Last year expenses</div>
+                </div>
+                <div class="widget-content-right">
+                  <div class="widget-numbers text-success">1896</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="bg-transparent list-group-item">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left">
+                  <div class="widget-heading">Clients</div>
+                  <div class="widget-subheading">Total Clients Profit</div>
+                </div>
+                <div class="widget-content-right">
+                  <div class="widget-numbers text-primary">$12.6k</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-12 col-lg-4" style="display: none;">
+      <ul class="list-group list-group-flush">
+        <li class="bg-transparent list-group-item">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left">
+                  <div class="widget-heading">Followers</div>
+                  <div class="widget-subheading">People Interested</div>
+                </div>
+                <div class="widget-content-right">
+                  <div class="widget-numbers text-danger">45,9%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="bg-transparent list-group-item">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left">
+                  <div class="widget-heading">Products Sold</div>
+                  <div class="widget-subheading">Total revenue streams</div>
+                </div>
+                <div class="widget-content-right">
+                  <div class="widget-numbers text-warning">$3M</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-12 col-lg-4" style="display: none;">
+      <ul class="list-group list-group-flush">
+        <li class="bg-transparent list-group-item">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left">
+                  <div class="widget-heading">Total Orders</div>
+                  <div class="widget-subheading">Last year expenses</div>
+                </div>
+                <div class="widget-content-right">
+                  <div class="widget-numbers text-success">1896</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="bg-transparent list-group-item">
+          <div class="widget-content p-0">
+            <div class="widget-content-outer">
+              <div class="widget-content-wrapper">
+                <div class="widget-content-left">
+                  <div class="widget-heading">Clients</div>
+                  <div class="widget-subheading">Total Clients Profit</div>
+                </div>
+                <div class="widget-content-right">
+                  <div class="widget-numbers text-primary">$12.6k</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
